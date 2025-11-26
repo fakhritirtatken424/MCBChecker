@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cek Beban MCB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  
+  <style>
+    :root {
+      --bg-dark: #0f0f23;
+      --bg-dark-2: #1a1a3e;
+      --accent-primary: #00d4ff;
+      --accent-secondary: #7c3aed;
+      --accent-old: #0066cc;
+      --success: #4caf50;
+      --warning: #ffb300;
+      --danger: #ff5252;
+      --muted: #888;
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-dark-2) 50%, var(--bg-dark) 100%);
+      color: #e0e0e0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* HEADER */
+    header {
+      background: rgba(15, 15, 35, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tagline {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      padding: 28px 0;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      height: 160px;
+      background: radial-gradient(circle at 10% 20%, rgba(0, 212, 255, 0.1), transparent 20%),
+                  radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.08), transparent 25%);
+      filter: blur(12px);
+      z-index: 0;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 12px 20px;
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+      letter-spacing: 0.4px;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    /* CONTAINER & LAYOUT */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+
+    .layout {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .left-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .right-col {
+      width: 420px;
+    }
+
+    @media (max-width: 1024px) {
+      .layout { flex-direction: column; }
+      .right-col { width: 100%; }
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .label {
+      display: block;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.1);
+    }
+
+    /* DEVICE GRID */
+    .device-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+      max-height: 350px;
+      overflow-y: auto;
+      padding: 5px;
+    }
+
+    .device-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      cursor: pointer;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.05), rgba(124, 58, 237, 0.03));
+      transition: all 0.14s ease;
+    }
+
+    .device-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 212, 255, 0.15);
+      border-color: rgba(0, 212, 255, 0.5);
+    }
+
+    .device-card input {
+      transform: scale(1.05);
+      cursor: pointer;
+    }
+
+    .device-info {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .device-name {
+      font-weight: 600;
+      color: #e0e0e0;
+      font-size: 0.9rem;
+    }
+
+    .device-watt {
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    /* SEARCH & RECOMMENDATIONS */
+    .recommendations {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .rec-btn {
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(0, 212, 255, 0.4);
+      background: rgba(0, 212, 255, 0.1);
+      color: var(--accent-primary);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .rec-btn:hover {
+      background: rgba(0, 212, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    /* CHIPS */
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(124, 58, 237, 0.08));
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      font-size: 0.9rem;
+    }
+
+    .chip-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .chip-name {
+      font-weight: 500;
+    }
+
+    .chip-qty {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 212, 255, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      margin-left: auto;
+    }
+
+    .chip-qty button {
+      background: none;
+      border: none;
+      color: var(--accent-primary);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.8rem;
+      padding: 0;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chip-qty button:hover {
+      opacity: 0.8;
+    }
+
+    .chip-remove {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      font-weight: bold;
+      padding: 0;
+      margin-left: 8px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chip-remove:hover {
+      opacity: 0.8;
+    }
+
+    /* MANUAL AREA */
+    .manual-area {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .manual-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .manual-remove-btn {
+      padding: 8px 12px;
+      background: rgba(255, 82, 82, 0.2);
+      color: var(--danger);
+      border: 1px solid rgba(255, 82, 82, 0.4);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s ease;
+    }
+
+    .manual-remove-btn:hover {
+      background: rgba(255, 82, 82, 0.3);
+    }
+
+    .manual-total-display {
+      margin-top: 12px;
+      padding: 10px;
+      background: rgba(76, 175, 80, 0.1);
+      border-radius: 8px;
+      border-left: 3px solid var(--success);
+      display: none;
+    }
+
+    .manual-total-display strong {
+      color: var(--success);
+    }
+
+    /* BUTTONS */
+    button {
+      padding: 10px 16px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .button-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* RESULT CARD */
+    .result-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 2px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      display: none;
+      animation: slideIn 0.5s ease-out;
+    }
+
+    .result-card.show {
+      display: block;
+    }
+
+    .result-card.status-safe {
+      border-color: rgba(76, 175, 80, 0.3);
+      background: rgba(76, 175, 80, 0.05);
+    }
+
+    .result-card.status-warning {
+      border-color: rgba(255, 179, 0, 0.3);
+      background: rgba(255, 179, 0, 0.05);
+    }
+
+    .result-card.status-danger {
+      border-color: rgba(255, 82, 82, 0.3);
+      background: rgba(255, 82, 82, 0.05);
+    }
+
+    .status-circle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      font-size: 3rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid currentColor;
+    }
+
+    .status-text {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 12px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .status-text.safe { color: var(--success); }
+    .status-text.warning { color: var(--warning); }
+    .status-text.danger { color: var(--danger); }
+
+    .progress-bar {
+      width: 100%;
+      height: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
+      border-radius: 10px;
+      transition: width 0.6s ease;
+    }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .result-stats { grid-template-columns: 1fr; }
+    }
+
+    .stat-item {
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    /* ADVICE */
+    .advice-section {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      display: none;
+    }
+
+    .advice-section.show {
+      display: block;
+    }
+
+    .advice-section h3 {
+      font-size: 1.1rem;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .advice-list {
+      list-style: none;
+    }
+
+    .advice-item {
+      padding: 8px 0;
+      padding-left: 16px;
+      position: relative;
+      color: #aaa;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .advice-item:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent-primary);
+      font-weight: bold;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      border-top: 1px solid var(--card-border);
+      margin-top: 40px;
+    }
+
+    /* ANIMATIONS */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 212, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 212, 255, 0.5);
+    }
+
+    /* MCB dropdown text color */
+    #mcb_select,
+    #mcb_select option {
+      color: black !important;
+      background: white !important;
+    }
+
+    #mcb_manual {
+      color: black !important;
+      background: white !important;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="header-container">
+      <div>
+        <div class="logo">⚡ MCB Checker</div>
+        <div class="tagline">Electrical Safety</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div>
+        <h1 class="hero-title">Cek Beban Listrik Rumah Anda</h1>
+        <p class="hero-sub">Analisis real-time dengan rekomendasi personal untuk keselamatan maksimal</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="container">
+    <div class="layout">
+      
+      <!-- LEFT -->
+      <div class="left-col">
+
+        <!-- MCB SELECT -->
+        <div class="card">
+          <label class="label">Kapasitas MCB (VA)</label>
+          <div class="row">
+            <select id="mcb_select" class="input">
+              <option value="450">450 VA</option>
+              <option value="900">900 VA</option>
+              <option value="1300" selected>1300 VA</option>
+              <option value="2200">2200 VA</option>
+              <option value="3500">3500 VA</option>
+              <option value="4400">4400 VA</option>
+              <option value="5500">5500 VA</option>
+            </select>
+
+            <input id="mcb_manual" class="input" type="number" placeholder="VA lain (opsional)" />
+          </div>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="card">
+          <label class="label">Cari Peralatan</label>
+          <input id="search" class="input" type="text" placeholder="Ketik nama peralatan..." autocomplete="off" />
+          <div id="recommendations" class="recommendations"></div>
+        </div>
+
+        <!-- DEVICE GRID -->
+        <div class="card">
+          <label class="label">Pilih Peralatan</label>
+          <div class="device-grid" id="deviceGrid">
+            {% for name, watt in devices.items() %}
+            <div class="device-card">
+              <input type="checkbox" id="device-{{ loop.index }}" value="{{ name }}" />
+              <label for="device-{{ loop.index }}" style="display:flex; gap:8px; width:100%; cursor:pointer;">
+                <div class="device-info">
+                  <span class="device-name">{{ name }}</span>
+                  <span class="device-watt">{{ watt }} W</span>
+                </div>
+              </label>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- CHIPS -->
+        <div class="card">
+          <label class="label">Item Terpilih</label>
+          <div class="chips" id="selected-chips"></div>
+        </div>
+
+        <!-- MANUAL -->
+        <div class="card">
+          <label class="label">Tambah Peralatan Manual</label>
+          <div class="row">
+            <input id="manualNameInput" class="input" type="text" placeholder="Nama peralatan" />
+            <input id="manualWattInput" class="input" type="number" placeholder="Watt" />
+            <button id="addManualBtn" class="button-secondary">+</button>
+          </div>
+
+          <div class="manual-area" id="manual-area"></div>
+
+          <div class="manual-total-display" id="manualTotalDisplay">
+            Total Manual: <strong id="manualTotal">0</strong> W
+          </div>
+
+          <button id="clearManualBtn" class="button-secondary" style="width:100%; margin-top:10px;">Hapus Semua Manual</button>
+        </div>
+
+        <!-- BUTTON GROUP -->
+        <div class="button-group">
+          <button id="calculateBtn" style="flex:1;">Hitung</button>
+          <button id="resetBtn" class="button-secondary" style="flex:1;">Reset</button>
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right-col">
+
+        <!-- RESULT CARD -->
+        <div class="card result-card" id="resultCard">
+          <div class="status-circle" id="statusCircle">⚡</div>
+          <div class="status-text" id="statusText">Siap</div>
+
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+          </div>
+
+          <div class="result-stats">
+            <div class="stat-item">
+              <div class="stat-label">Total Daya</div>
+              <div class="stat-value" id="totalW">0W</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-label">Limit MCB</div>
+              <div class="stat-value" id="limitVA">0VA</div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-label">Penggunaan</div>
+              <div class="stat-value" id="percentText">0%</div>
+            </div>
+          </div>
+
+          <button id="closeResultBtn" class="button-secondary" style="width:100%; margin-top:16px;">✕ Tutup</button>
+        </div>
+
+        <!-- ADVICE -->
+        <div class="card advice-section" id="adviceSection">
+          <h3>🎯 Saran & Rekomendasi</h3>
+
+          <h4 style="font-size:0.9rem; color:var(--muted); margin-top:14px; margin-bottom:8px;">Status:</h4>
+          <ul class="advice-list" id="statusAdvice"></ul>
+
+          <h4 style="font-size:0.9rem; color:var(--muted); margin-top:14px; margin-bottom:8px;">Per Peralatan:</h4>
+          <ul class="advice-list" id="perItemAdvice"></ul>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>&copy; 2025 MCB Overload Checker. Pastikan keselamatan listrik rumah Anda selalu terjaga.</p>
+  </footer>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
